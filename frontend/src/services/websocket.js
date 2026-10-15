@@ -16,11 +16,14 @@ class WebSocketService {
     const envWsUrl = import.meta.env.VITE_WS_URL;
     let wsUrl = envWsUrl;
     if (!wsUrl) {
-      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const host = window.location.hostname || 'localhost';
-      // In dev server (port 5173), route to port 8000. In production / cloud, use current port.
-      const portStr = window.location.port === '5173' ? ':8000' : (window.location.port ? `:${window.location.port}` : '');
-      wsUrl = `${protocol}//${host}${portStr}/ws`;
+      const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      if (isLocal) {
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const portStr = window.location.port === '5173' ? ':8000' : (window.location.port ? `:${window.location.port}` : '');
+        wsUrl = `${protocol}//${window.location.hostname}${portStr}/ws`;
+      } else {
+        wsUrl = 'wss://smart-hospital-bed-simulator.onrender.com/ws';
+      }
     }
 
     try {
